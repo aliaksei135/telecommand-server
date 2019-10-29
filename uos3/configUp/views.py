@@ -1,10 +1,14 @@
-﻿from django.http import HttpResponseRedirect
+﻿import datetime
+import logging
+
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
-from .models import config
+
 from .forms import configCreateForm, configModForm
-import datetime
-import logging
+from .models import config
+
+
 # Create your views here.
 
 def get_all_fields_from_form(instance):
@@ -105,7 +109,7 @@ class ConfigUpView(generic.TemplateView):
                 form.save()
                 return HttpResponseRedirect('configThanks')
             else:
-                raise Exception(form.errors.as_text())
+                return render(request, self.template_name, {'form': form})
 
 class ListConfigsView(generic.ListView):
     model = config
@@ -194,10 +198,11 @@ class SendDataView(generic.TemplateView):
 
             write_to_binary(newConfigBinary)
 
-            config.objects.filter(id=self.kwargs["pk"]).update(confirmed_uplink = True)
+            instance = config.objects.filter(id=self.kwargs["pk"]).first()
+            instance.confirmed_uplink = True
+            instance.save(update_fields=['confirmed_uplink'])
             
             logging.debug("Config Object ID: {} has been updated".format(self.kwargs["pk"]))
-
 
             return HttpResponseRedirect('/configThanks')
         else:

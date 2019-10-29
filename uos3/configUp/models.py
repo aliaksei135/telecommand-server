@@ -1,14 +1,13 @@
-from django.db import models
-from django.forms import ModelForm
-from django.core.validators import MinValueValidator, MaxValueValidator
-
 import datetime
+
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
+
 
 # Create your models here.
 
 
 class config(models.Model):
-
     choices_tx_interval_downlink = (
         (0, '0 ms'),
         (50, '500 ms'),
@@ -48,15 +47,15 @@ class config(models.Model):
         (1, 'On'),
     )
 
-    date_submitted = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
-    user_submitted = models.CharField(max_length=64, default='uos3')
-    confirmed_uplink = models.BooleanField(default=False)
-    date_uplink = models.DateTimeField(default=datetime.datetime(1970, 1, 1))
+    date_submitted = models.DateTimeField(auto_now_add=True, editable=False)
+    date_modified = models.DateTimeField(auto_now=True, editable=False)
+    user_submitted = models.CharField(max_length=64, default='uos3', editable=False)
+    confirmed_uplink = models.BooleanField(default=False, editable=False)
+    date_uplink = models.DateTimeField(default=datetime.datetime(1970, 1, 1), editable=False, blank=True)
 
-    tx_enable = models.BooleanField(choices=choices_bool,default=True)
+    tx_enable = models.BooleanField(choices=choices_bool, default=True)
 
-    tx_interval = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(255)])
+    tx_interval = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(255)])
 
     tx_interval_downlink = models.IntegerField(choices=choices_tx_interval_downlink)
 
@@ -64,40 +63,42 @@ class config(models.Model):
 
     tx_power = models.IntegerField(choices=choices_tx_power)
 
-    tx_overtemp = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(255)])
+    tx_overtemp = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(255)])
 
-    rx_overtemp = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(255)])
+    rx_overtemp = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(255)])
 
-    batt_overtemp = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(255)])
+    batt_overtemp = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(255)])
 
-    obc_overtemp = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(255)])
+    obc_overtemp = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(255)])
 
-    pa_overtemp = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(255)])
+    pa_overtemp = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(255)])
 
-    low_voltage_threshold = models.FloatField(validators = [MinValueValidator(0), MaxValueValidator(25.5)])
+    low_voltage_threshold = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(25.5)])
 
-    low_voltage_recovery = models.FloatField(validators = [MinValueValidator(0), MaxValueValidator(25.5)])
+    low_voltage_recovery = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(25.5)])
 
-    health_acquisition_interval = models.PositiveIntegerField(validators = [MinValueValidator(0), MaxValueValidator(65535)])
+    health_acquisition_interval = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(65535)])
 
-    configuration_acquisition_interval = models.PositiveIntegerField(validators = [MinValueValidator(0), MaxValueValidator(65535)])
+    configuration_acquisition_interval = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(65535)])
 
-    imu_acquisition_interval = models.PositiveIntegerField(validators = [MinValueValidator(0), MaxValueValidator(65535)])
+    imu_acquisition_interval = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(65535)])
 
-    imu_sample_count = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(16)])
+    imu_sample_count = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(16)])
 
-    imu_sample_interval = models.PositiveSmallIntegerField(validators = [MinValueValidator(10), MaxValueValidator(2550)])
+    imu_sample_interval = models.PositiveSmallIntegerField(validators=[MinValueValidator(10), MaxValueValidator(2550)])
 
-    gps_acquisition_interval = models.PositiveIntegerField(validators = [MinValueValidator(0), MaxValueValidator(65535)])
+    gps_acquisition_interval = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(65535)])
 
-    gps_sample_count = models.PositiveSmallIntegerField(validators = [MinValueValidator(0), MaxValueValidator(16)])
+    gps_sample_count = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(16)])
 
-    gps_sample_interval = models.PositiveSmallIntegerField(validators = [MinValueValidator(10), MaxValueValidator(2550)])
+    gps_sample_interval = models.PositiveSmallIntegerField(validators=[MinValueValidator(10), MaxValueValidator(2550)])
 
-    image_acquisition_time = models.BigIntegerField(validators = [MinValueValidator(0), MaxValueValidator(4294967295)])
+    image_acquisition_time = models.BigIntegerField(validators=[MinValueValidator(0), MaxValueValidator(4294967295)])
 
     image_acquisition_profile = models.IntegerField(choices=choices_image_acquisition_profile)
-    time = models.BigIntegerField(validators = [MinValueValidator(0), MaxValueValidator(4294967295)])
+    time = models.BigIntegerField(validators=[MinValueValidator(0), MaxValueValidator(4294967295)])
     operational_mode = models.IntegerField(choices=choices_operational_mode)
     self_test = models.IntegerField(choices=choices_bool, default=False)
     power_rail_1 = models.IntegerField(choices=choices_bool, default=True)
@@ -115,4 +116,4 @@ class config(models.Model):
     imu_accel_enabled = models.IntegerField(choices=choices_bool, default=False)
     imu_gyro_enabled = models.IntegerField(choices=choices_bool, default=False)
     imu_magno_enabled = models.IntegerField(choices=choices_bool, default=False)
-    downlink_stop_time = models.BigIntegerField(validators = [MinValueValidator(0), MaxValueValidator(4294967295)])
+    downlink_stop_time = models.BigIntegerField(validators=[MinValueValidator(0), MaxValueValidator(4294967295)])
