@@ -186,18 +186,6 @@ class SendDataView(generic.TemplateView):
         if form.is_valid():
             form.save()
 
-            list_of_fields = get_all_fields_from_form(configModForm)
-            newConfigBinary = []
-
-            for i in range(0, len(list_of_fields)):
-                if request.POST.get(list_of_fields[i]) == None:
-                    logging.debug(list_of_fields[i])
-                    continue
-                else:
-                    newConfigBinary.append(request.POST.get(list_of_fields[i]))
-
-            write_to_binary(newConfigBinary)
-
             instance = config.objects.filter(id=self.kwargs["pk"]).first()
             instance.confirmed_uplink = True
             instance.save(update_fields=['confirmed_uplink'])
