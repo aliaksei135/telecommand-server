@@ -26,6 +26,7 @@ def get_all_fields_from_form(instance):
         if field not in fields:
             fields.append(field)
     return fields
+
 def write_to_binary(values):
     logging.debug(values)
     logging.debug(len(values))
@@ -76,6 +77,7 @@ def write_to_binary(values):
     logging.debug(internal_bytes)
     return internal_list
 
+
 class IndexView(generic.TemplateView):
     template_name = 'configUp/index.html'
 
@@ -111,13 +113,16 @@ class ConfigUpView(generic.TemplateView):
             else:
                 return render(request, self.template_name, {'form': form})
 
+
 class ListConfigsView(generic.ListView):
     model = config
     template_name = 'configUp/listConfigs.html'
 
+
 class ListConfigsSentView(generic.ListView):
     model = config
     template_name = 'configUp/listConfigsSent.html'
+
 
 class DetView(generic.TemplateView):
      model = config
@@ -165,6 +170,8 @@ class ModDetView(generic.TemplateView):
         else:
             config.objects.filter(id=self.kwargs["pk"]).delete()
             return HttpResponseRedirect('/delThanks')
+
+
 class SendDataView(generic.TemplateView):
     model = config
     template_name = 'configUp/sendData.html'
@@ -189,8 +196,6 @@ class SendDataView(generic.TemplateView):
             instance = config.objects.filter(id=self.kwargs["pk"]).first()
             instance.confirmed_uplink = True
             instance.save(update_fields=['confirmed_uplink'])
-            
-            logging.debug("Config Object ID: {} has been updated".format(self.kwargs["pk"]))
 
             return HttpResponseRedirect('/configThanks')
         else:
