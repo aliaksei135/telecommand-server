@@ -27,59 +27,14 @@ def get_all_fields_from_form(instance):
             fields.append(field)
     return fields
 
-def write_to_binary(values):
-    logging.debug(values)
-    logging.debug(len(values))
-    sum = 0
-    internal_list = []
-    internal_template_list = [1,8,8,4,4, #41 parameters
-    8,8,8,8,8,
-    8,8,16,16,16,
-    4,8,16,4,8,
-    32,1,32,2,1,
-    1,1,1,1,1,1,
-    1,1,1,1,1,
-    1,1,1,1,32] #power_rail_4 is missing from configuration file spreadsheet
-
-    internal_bytes = bytearray()
-    for i in internal_template_list:
-        sum = sum + i
-
-    logging.debug(sum)
-    for i in values:
-        if (isinstance(i, str)):
-            if i == "on":
-                internal_list.append(1)
-            elif i == "off":
-
-                internal_list.append(0)
-            else:
-                new_f = float(i) #rounding error here
-                new_i = int(new_f)
-                internal_list.append(new_i)
-        else:
-            raise Exception("Unknown Type Error")
-    for counter in range(0, len(internal_list)):
-        if internal_list[counter] < 255:
-            internal_bytes.append(internal_list[counter])
-        elif internal_list[counter] > 255:
-            bit_counter = int(internal_template_list[counter]/8)
-            logging.debug("Larger than 255 value encountered. Value is {}, attempting to convert to bytes. Template bits length is {}".format(internal_list[counter], internal_template_list[counter]))
-            #result = internal_list[counter].to_bytes(bit_counter, 'little')
-            #internal_bytes[counter:counter] = result
-            #logging.debug("Output is {}".format(result))
-            #logging.debug("Testing reverse: {}".format(int.from_bytes(result, 'little')))
-            for i in range(1, bit_counter + 1):
-                bitshift = 32-(8*i)
-                result = internal_list[counter] << (bitshift) & 0xFF
-                internal_bytes.append(result)
-                logging.debug("Bitshifting value of {} by {}, result is {}".format(internal_list[counter], bitshift, result))
-    logging.debug(internal_bytes)
-    return internal_list
-
 
 class IndexView(generic.TemplateView):
     template_name = 'configUp/index.html'
+
+    def get(self, request, *args, **kwargs):
+        if 'delete_all' in request.GET:
+            config.objects.filter(confirmed_uplink=False).delete()
+        return super(IndexView, self).get(self, request, *args, **kwargs)
 
 
 class ThanksView(generic.TemplateView):
